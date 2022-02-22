@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block title %}
+<title>Ambulance Detection</title>
+{% endblock title %}
+
+{% block rightContent %}
+
+<head>
+
+<style>
+    .circular{
+        height:100px;
+        width: 100px;
+        left: 50%;
+        margin-top: 17%;
+        position:relative;
+        transform:scale(2);
+      }
+      .circular .inner{
+        position: absolute;
+        z-index: 6;
+        top: 50%;
+        left: 50%;
+        height: 80px;
+        width: 80px;
+        margin: -40px 0 0 -40px;
+        background: #dde6f0;
+        border-radius: 100%;
+       
+      }
+      .circular .number{
+        position: absolute;
+        top:50%;
+        left:50%;
+        transform: translate(-50%, -50%);
+        z-index:10;
+        font-size:18px;
+        font-weight:500;
+        color:#4158d0;
+      }
+      .circular .bar{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background: #fff;
+        -webkit-border-radius: 100%;
+        clip: rect(0px, 100px, 100px, 50px);
+      }
+      .circle .bar .progress{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        -webkit-border-radius: 100%;
+        clip: rect(0px, 50px, 100px, 0px);
+        background: #4158d0;
+      }
+      .circle .left .progress{
+        z-index:1;
+        animation: left 27.6s linear both;
+      }
+      @keyframes left{
+        100%{
+          transform: rotate(180deg);
+        }
+      }
+      .circle .right {
+        transform: rotate(180deg);
+        z-index:3;
+       
+      }
+      .circle .right .progress{
+        animation: right 27s linear both;
+        animation-delay: 28s;
+      }
+      @keyframes right{
+        100%{
+          transform: rotate(180deg);
+        }
+      }
+      .circular-container{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.705);
+        visibility:hidden;
+        display:none;
+      }
+      @media screen and (max-width:680px) {
+        #image-container {
+          display: block !important;
+        }
+      }
+      .row:hover{
+        border:0px;
+        border-style: hidden;
+      }
+      #upload{
+        height:45px; width: 50%;  margin-left:270px; border:1px solid; margin-top: -105px;
+      }
+      #upload:hover{
+        background-color: rgb(247, 248, 247); border:2px solid;
+        border-color: #4158d0; 
+        color: rgb(5, 5, 5);
+      }
+      .dark-mode {
+        background-color: rgba(0, 0, 0, 0.74);
+        color: white;
+      }
+
+      input[type=file]{
+        display: inline;
+        width: 200px;
+      }
+      input[type=file]::file-selector-button:hover{
+        background: #91a1f1;
+        color: black;
+      }
+      input[type=file]::file-selector-button{
+        display: block;
+        position: relative;
+        width: 200px;
+        height: 40px;
+        border-radius: 25px;
+        background: linear-gradient(40deg, #cabdc5, #a5a3e7);
+        box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform .2s ease-out;
+      }
+      form{
+        display:inline-block;
+      }
+
+      body{
+        -webkit-transition: background-color 1200ms linear;
+        -ms-transition: background-color 1300ms linear;
+        transition: background-color 1400ms linear;
+      }
+
+      .audio-result
+        {
+            animation:1s blinker linear infinite;
+            -webkit-animation:1s blinker linear infinite;
+            -moz-animation:1s blinker linear infinite;
+            color: rgb(253, 86, 44);
+            text-shadow: #ffffff;
+        }
+
+        @-moz-keyframes blinker
+        {  
+            0% { opacity: 1.0; }
+            50% { opacity: 0.0; }
+            100% { opacity: 1.0; }
+        }
+
+        @-webkit-keyframes blinker
+        {  
+            0% { opacity: 1.0; }
+            50% { opacity: 0.0; }
+            100% { opacity: 1.0; }
+        }
+
+        @keyframes blinker
+        {  
+            0% { opacity: 1.0; }
+            50% { opacity: 0.0; }
+            100% { opacity: 1.0; }
+        }
+
+</style>
+<script>
+  document.body.add("light=mode");
+  function changeMode(event) {
+    var element = document.body;
+    if(document.body.className=="dark-mode"){
+      element.classList.remove("dark-mode");
+      document.getElementById("audio-result").style.color = 'rgb(253, 86, 44)';  
+      document.getElementById("mode").innerText = "Dark Mode";
+      document.getElementById("mode").src= "https://static.thenounproject.com/png/670445-200.png";
+    }
+    else{
+      element.classList.add("dark-mode");
+      document.getElementById("audio-result").style.color = "yellow";
+      document.getElementById("mode").innerText = "Light Mode";
+      document.getElementById("mode").src= "https://cdn4.iconfinder.com/data/icons/multimedia-flat-30px/30/sun_light_mode_day-512.png";
+      //document.getElementById("modetxt").color = "black";
+      //document.getElementById("modetxt").backgroundColor = "black";
+    }
+  }
+</script>
+
+
+</head>
+
+
+<div class="container-fluid" style="margin-top: -60px;" id="ambulance-right-div">
+    <div class="row">
+        <div class="col-lg-6 col-md-4">
+            <img src="{% static 'images/ambulance_detection_2.png' %}" draggable="false" id="bgimg" alt="default ambulance img" width="100%">
+            
+            <div class="row"><br>
+                <div class="col-3 col-sm-5">
+                    
+                    <div style="display:flex;">
+                          <div>
+                            <!--<label for="photo">Upload Audio File</label>-->
+                                <form method="post" enctype="multipart/form-data" id="ambulance_form">
+                                    {% csrf_token %}
+                                    
+                                    {% for field in form %}
+                                        
+                                        {{ field.label_tag }} {{ field }}
+                                        
+                                        {% if "video" in field.label_tag %}
+                                          <input type="submit" name="video" onclick="loading()" value="Upload Video" id="upload" type="submit" class="btn btn-success">
+                                        {% else %}
+                                          <input type="submit" name="audio" onclick="loading()" value="Upload Audio" id="upload" type="submit" class="btn btn-success">
+                                        {% endif %}
+                                    {% endfor %}
+        
+                                </form>
+                                  {% if isclicked %}
+                                      <script>
+                                        function callAlert(){
+                                          alert('{{error_name}}');
+                                        }
+                                        callAlert();
+                                      </script>
+                                  {% endif %}
+                          </div>
+                          
+                    </div>
+                </div><br>
+            </div>
+        </div>
+
+
+
+        <div class="col-lg-6 col-md-8">
+            <video class="img-fluid" width="100%" height="390px" controls>
+                <source src="{{ videoURL }}" alt="Uploaded Video" id="camera" style="width: 100%;height: 390px" type="video/mp4">
+            </video>
+            <div class="caption" style="font-size:20px;"><b>Video | Result &nbsp; &rarr;
+              {% if isaudio %}
+              <span style="font-size:20px; top: 100px; margin-left: 20px;" class="audio-result" id="audio-result">
+                {{audio_result}} &nbsp; | &nbsp; ({{score}}%)
+              </span>
+            {% endif %}
+          </b></div>
+            <br>
+        </div>
+
+        <div class="audio-preview" id="audioPreview">
+          <audio id="audio" style="margin-left: 100px;" controls>
+              <source src="{{audioURL}}" id="src">
+          </audio>
+          
+        </div>
+
+
+    
+      </div>
+</div>
+
+  <div class="circular-container" id="circular">
+      <div class="circular" id="circular-bar" style="visibility: hidden"> 
+          <div class="inner"></div>
+          <div class="number">0%</div>
+          <div class="circle"  id="circle">
+            <div class="bar left" id="left">
+              <div class="progress" id="lprogress"></div>
+            </div>
+            <div class="bar right" id="right">
+              <div class="progress" id="rprogress"></div>
+            </div>
+          </div>
+      </div>
+  </div>
+
+
+<script>
+    
+    var videoID = document.getElementById('video');
+    
+    const numb = document.querySelector(".number");
+
+    function loading(){
+
+        document.getElementById("circular").style.visibility = "visible";
+        document.getElementById("circular-bar").style.visibility = "visible";
+        document.getElementById("circular").style.display = "block";
+
+        let counter = 0;
+        setInterval(() => {
+        if(counter >= 100 ){
+            clearInterval();
+            
+        }else{
+            counter+= 0.15;
+            numb.textContent = parseInt(counter) + "%";
+        }
+        }, 80);
+
+    }
+
+    $(document).ready(function(){
+      $('#ambulance_form').submit(function(){
+          loading();
+      });
+    });
+
+</script>
+
+
+
+<script>
+  $(document).ready(function () {
+      $('#sidebarCollapse').on('click', function () {
+          $('#sidebar').toggleClass('active');
+      });
+  });
+</script>
+
+<script>
+  function handleFiles(event) {
+      var files = event.target.files;
+      $("#src").attr("src", URL.createObjectURL(files[0]));
+      document.getElementById("audio").load();
+  }
+  document.getElementById("upload").addEventListener("change", handleFiles, true);
+
+
+</script>
+
+
+
+
+{% endblock rightContent %}

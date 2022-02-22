@@ -1,0 +1,42 @@
+{% load static %}
+<nav id="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'home' %}"><img src="{% static 'images/zummit.png' %}" alt="Zummit_logo" srcset=""></a>
+            </div>
+
+            <ul class="list-unstyled components">
+
+                <li class="active">
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Our Models</a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu">
+                        <li><a href="{% url 'ambulance_detection' %}">Ambulance Detection</a></li>
+                        <li><a href="{% url 'face_rec' %}">Face Recognition</a></li>
+                        <li><a href="{% url 'emotion_det' %}">Emotion Detection</a></li>
+                        <li><a href="{% url 'baggage_detection' %}">Unattended baggage</a></li>
+                        <li><a href="{% url 'head_count_detection' %}">Head Count Detection</a></li>
+                        <li><a href="{% url 'face_det' %}">Face Mask Detection</a></li>
+                        <li><a href="{% url 'drowsiness_det' %}">Drowsiness detection</a></li>
+                        <li><a href="{% url 'yawning_det' %}">Yawning Detection</a></li>
+                        <li><a href="{% url 'paint_scratch' %}">Paint Scratch and Dent Defect</a></li>
+			            <li><a href="{% url 'head_count' %}">Head Count</a></li>
+			            <li><a href="{% url 'keyword_extraction' %}">Keyword Extraction</a></li>
+                        <li><a href="{% url 'background_removal' %}">Background Removal</a></li>
+                        <li><a href="">Voice Call classification</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#">Members</a>
+                </li>
+
+                <li>
+                    <a href="#">Attendance</a>
+                </li>
+
+                <li>
+                    <span>Hello,{{request.user}}</span>
+                    <span><a href="{% url 'logout' %}">Logout</a></span>
+                </li>
+            </ul>
+
+</nav>
